@@ -48,8 +48,6 @@ build_config:
   include:
     - drivers/
     - config/
-    - drivers/sal/include
-    - drivers/sal/internal
   cflag: >
         -DCHIP_HAAS1000 -DCHIP_HAS_UART=3 -DRESAMPLE_ANY_SAMPLE_RATE -DCHIP_HAS_TRANSQ -DRTOS=1
         -DCQ_FUNC_ATTR= -DDEBUG=1 -DPERSIST_DATA_SECTION_SIZE=0x1000 -DLASTWORD_RAM_ADDR=0x20166000 -DSYSINFO_PRODUCT_MODEL=\"ALI_AOS_HAAS100\"
@@ -66,8 +64,9 @@ source_file:
   - "drivers/watchdog.c"
   - "drivers/key.c"
   - "drivers/ch395_spi.c"
-  - drivers/ch395.c ? <WITH_SAL> 
-  - drivers/sal/src/*.c ? <WITH_SAL> 
+  - drivers/ch395_cmd.c
+  - drivers/ch395_sal.c
+  - drivers/ch395_lwip.c
 #cflags: -DCHIP_BEST2001 -DCHIP_HAS_UART=3 -DRESAMPLE_ANY_SAMPLE_RATE -DCHIP_HAS_TRANSQ -DRTOS=1 -DCQ_FUNC_ATTR= -DDEBUG=1 -DPERSIST_DATA_SECTION_SIZE=0x1000 
 #        -DSYSINFO_OS_VERSION="v3.1" -DSYSINFO_PRODUCT_MODEL="ALI_AOS_HAAS100" -DSYSINFO_DEVICE_NAME="HAAS100" -DSYSINFO_ARCH="Cortex-M4F" -DSYSINFO_MCU="mcu_haas1000" -DSYSINFO_BOARD="haas100" -DOS_CLOCK_NOMINAL=16000
 
@@ -82,6 +81,7 @@ def_config:
   CLI_CONFIG_STACK_SIZE: 8192
   RHINO_CONFIG_TICKS_PER_SECOND: 1000
   WITH_LWIP: 1
+  #WITH_SAL: 1
   POSIX_DEVICE_IO_NEED: 1
   AOS_2ND_BOOT_NO_LDS: 1
   AOS_2ND_BOOT_AB: 1
