@@ -1,0 +1,417 @@
+
+## 第一部分： 基础信息
+name: py_engine
+version: master
+description: "component built by cmake"             # <必选项> 建议至少20字以上
+type: common                                        # <必选项> 组件类型，为：solution, chip, board, common, sdk
+
+tag:                                                # <可选项> 组件分类，缺省值： ''
+license: Apache license v2.0                        # <可选项> 源代码的许可证，要确保所有代码、文件的许可证不冲突。如：MIT，Apache license v2.0，BSD
+
+## 第二部分：依赖信息
+#           指定该组件依赖的组件及版本，版本支持条件比较，支持：>=v1.0, >v1.0, ==v1.0, <=v1.0, <v1.0, v1.0
+#           未指定条件时，默认为 ==，如 v1.0 与 ==v1.0
+# depends:                                 # <可选项> 该组件依赖其他的组件，合理的依赖才能保证组件能编译、使用
+#   - minilibc: v7.2.0
+#   - aos: >=v7.2.0
+depends:
+  - cli: master
+  - osal_aos: master
+  - ulog: master
+  - kv: master
+  - mbedtls: master
+  - cjson: master
+  - fatfs: "master ? <PY_BUILD_FATFS>"
+  - vfs: master
+  - amp_adapter: master
+  - oss: "master ? <PY_BUILD_OSS>"
+  - linksdk: "master ? <PY_BUILD_LINKSDK>"
+  - netmgr: "master ? <PY_BUILD_NETMGR>"
+  - lwip: master
+  - http: "master ? <PY_BUILD_HTTP>"
+  - mqtt: "master ? <PY_BUILD_MQTT>"
+  - ucloud_ai: "master ? <PY_BUILD_AI>"
+  - uvoice: "master ? <PY_BUILD_AUDIO>"
+  - a2sa: "master ? <PY_BUILD_AUDIO>"
+  - ble_netconfig: "master ? <PY_BUILD_BLENETCONFIG>"
+  - ble_host: "master ? <PY_BUILD_BLENETCONFIG>"
+  - sntp: "master ? <PY_BUILD_SNTP>"
+  - mbedtls: "master ? <PY_BUILD_MBEDTLS>"
+  - mbmaster: "master ? <PY_BUILD_MODBUS>"
+  
+  
+## 第四部分：编译连接信息
+# build_config:                            # <可选项> 编译配置项
+#   include:                               # <可选项> 编译时，影响编译器的-I 参数 ,全局有效
+#     - src                                #        include 只能是该软件包下的目录，不能使用外部目录
+#   internal_include:                      # <可选项> 编译时，影响编译器的-I 参数 ,组件内有效
+#     - include
+#   cflag: ''                              # <可选项> C 编译器所需要要的编译参数
+#   cxxflag: ''                            # <可选项> CXX 编译器所需要要的编译参数
+#   asmflag: ''                            # <可选项> 汇编器所需要要参数
+#   define:                                # <可选项> 宏定义, 增加编译器的-D 选项,如：
+#     XXX: 1                               #   -DXXX=1
+#     AAA: 1                               #   -DAAA
+#     STR: "abc"                           #   -DSTR="abc"
+#   libs:                                  # 该组件中支持的二进制静态库,如：libxxx.a, libyyy.a
+#     - xxx                                #   -lxxx
+#     - yyy                                #   -lyyy
+#   libpath:                               # 指定静态库所在的路径（相对于该组件路径）
+#     - libs                               #   -Llibs
+build_config:
+  define:
+    UVOICE_EVENT_BY_BUFFER_QUEUE: 1 ? <PY_BUILD_AUDIO>
+
+  include:
+    - unzip/internal/
+    - unzip/include/
+    - mpy_engine/
+    # mpy_engine/drivers/
+    - mpy_engine/drivers/bus/
+    # mpy_engine/extmod/
+    - mpy_engine/extmod/
+    - mpy_engine/extmod/crypto-algorithms/
+    - mpy_engine/extmod/re1.5/
+    - mpy_engine/extmod/uzlib/
+    # mpy_engine/lib/
+    - mpy_engine/lib/
+    - mpy_engine/lib/libm_dbl/
+    # mpy_engine/py/
+    - mpy_engine/py/
+    - mpy_engine/genhdr/
+
+    - mpy_adaptor/
+    # mpy_adaptor/system
+    - mpy_adaptor/system/
+    # mpy_adaptor/component
+    - mpy_adaptor/component/
+    - mpy_adaptor/component/minicv/base/include/
+    - mpy_adaptor/component/minicv/base/include/base/
+    # mpy_adaptor/component/minicv
+    - mpy_adaptor/component/minicv/base/modules/c/include/
+    - mpy_adaptor/component/minicv/base/modules/core/include/
+    - mpy_adaptor/component/minicv/base/modules/ml/include/
+
+
+  prebuild_script: create_python_home.py
+  # libs:
+# the library "hello" is built by third-part build system, and its name 
+# should NOT with the owner "camke_comp"
+    # - pyEngine
+  # prebuild_script: call_cmake.sh
+
+source_file:                             # <可选项> 指定参与编译的源代码文件，支持通配符，采用相对路径
+  # - src/*.c                              # 例：组件 src 目录下所有的扩展名为 c 的源代码文件
+  - example/py_engine_example.c
+  - unzip/src/ioapi.c
+  - unzip/src/iowin32.c
+  - unzip/src/miniunz.c
+  - unzip/src/unzip.c
+  - unzip/src/adler32.c
+  - unzip/src/compress.c
+  - unzip/src/crc32.c
+  - unzip/src/gzclose.c
+  - unzip/src/gzlib.c
+  - unzip/src/gzread.c
+  - unzip/src/gzwrite.c
+  - unzip/src/uncompr.c
+  - unzip/src/deflate.c
+  - unzip/src/trees.c
+  - unzip/src/zutil.c
+  - unzip/src/inflate.c
+  - unzip/src/infback.c
+  - unzip/src/inftrees.c
+  - unzip/src/inffast.c
+  # mpy_engine/drivers/
+  - mpy_engine/drivers/bus/softqspi.c
+  - mpy_engine/drivers/bus/softspi.c
+  # mpy_engine/extmod/
+  - mpy_engine/extmod/machine_i2c.c
+  - mpy_engine/extmod/machine_mem.c
+  - mpy_engine/extmod/machine_pinbase.c
+  - mpy_engine/extmod/machine_pulse.c
+  - mpy_engine/extmod/machine_signal.c
+  - mpy_engine/extmod/machine_spi.c
+  - mpy_engine/extmod/modbtree.c
+  - mpy_engine/extmod/modframebuf.c
+  - mpy_engine/extmod/modubinascii.c
+  - mpy_engine/extmod/moductypes.c
+  - mpy_engine/extmod/moduhashlib.c
+  - mpy_engine/extmod/moduheapq.c
+  - mpy_engine/extmod/modujson.c
+  - mpy_engine/extmod/modurandom.c
+  - mpy_engine/extmod/modure.c
+  - mpy_engine/extmod/moduselect.c
+  - mpy_engine/extmod/modussl_axtls.c
+  - mpy_engine/extmod/modussl_mbedtls.c
+  - mpy_engine/extmod/modutimeq.c
+  - mpy_engine/extmod/moduzlib.c
+  - mpy_engine/extmod/modwebrepl.c
+  - mpy_engine/extmod/moduwebsocket.c
+  - mpy_engine/extmod/uos_dupterm.c
+  - mpy_engine/extmod/vfs.c
+  - mpy_engine/extmod/vfs_fat.c
+  - mpy_engine/extmod/vfs_fat_diskio.c
+  - mpy_engine/extmod/vfs_fat_file.c
+  - mpy_engine/extmod/vfs_reader.c
+  - mpy_engine/extmod/virtpin.c
+  - mpy_engine/extmod/utime_mphal.c
+  - mpy_engine/extmod/vfs_posix_file.c
+  - mpy_engine/extmod/vfs_posix.c
+  - mpy_engine/extmod/moduasyncio.c
+  - mpy_engine/extmod/moducryptolib.c
+  # mpy_engine/lib/
+  - mpy_engine/lib/utils/interrupt_char.c
+  - mpy_engine/lib/utils/printf.c
+  - mpy_engine/lib/utils/pyexec.c
+
+  - mpy_engine/lib/utils/gchelper_generic.c
+
+  - mpy_engine/lib/utils/stdout_helpers.c
+  - mpy_engine/lib/mp-readline/readline.c
+  - mpy_engine/lib/timeutils/timeutils.c
+  - mpy_engine/lib/netutils/netutils.c
+  # mpy_engine/py/
+  - mpy_engine/py/argcheck.c
+  - mpy_engine/py/asmarm.c
+  - mpy_engine/py/asmbase.c
+  - mpy_engine/py/asmthumb.c
+  - mpy_engine/py/asmx64.c
+  - mpy_engine/py/asmx86.c
+  - mpy_engine/py/asmxtensa.c
+  - mpy_engine/py/bc.c
+  - mpy_engine/py/binary.c
+  - mpy_engine/py/builtinevex.c
+  - mpy_engine/py/builtinhelp.c
+  - mpy_engine/py/builtinimport.c
+  - mpy_engine/py/compile.c
+  - mpy_engine/py/emitbc.c
+  - mpy_engine/py/emitcommon.c
+  - mpy_engine/py/emitglue.c
+  - mpy_engine/py/emitinlinethumb.c
+  - mpy_engine/py/emitinlinextensa.c
+  - mpy_engine/py/emitnarm.c
+  - mpy_engine/py/emitnthumb.c
+  - mpy_engine/py/emitnx64.c
+  - mpy_engine/py/emitnx86.c
+  - mpy_engine/py/emitnxtensa.c
+  - mpy_engine/py/emitnxtensawin.c
+  - mpy_engine/py/formatfloat.c
+  - mpy_engine/py/frozenmod.c
+  - mpy_engine/py/gc.c
+  - mpy_engine/py/lexer.c
+  - mpy_engine/py/malloc.c
+  - mpy_engine/py/map.c
+  - mpy_engine/py/modarray.c
+  - mpy_engine/py/modbuiltins.c
+  - mpy_engine/py/modcmath.c
+  - mpy_engine/py/modcollections.c
+  - mpy_engine/py/modgc.c
+  - mpy_engine/py/modio.c
+  - mpy_engine/py/modmath.c
+  - mpy_engine/py/modmicropython.c
+  - mpy_engine/py/modstruct.c
+  - mpy_engine/py/modsys.c
+  - mpy_engine/py/modthread.c
+  - mpy_engine/py/moduerrno.c
+  - mpy_engine/py/mpprint.c
+  - mpy_engine/py/mpstate.c
+  - mpy_engine/py/mpz.c
+  - mpy_engine/py/nativeglue.c
+  - mpy_engine/py/nlr.c
+  - mpy_engine/py/nlrpowerpc.c
+  - mpy_engine/py/nlrsetjmp.c
+  - mpy_engine/py/nlrthumb.c
+  - mpy_engine/py/nlrx64.c
+  - mpy_engine/py/nlrx86.c
+  - mpy_engine/py/nlrxtensa.c
+  - mpy_engine/py/obj.c
+  - mpy_engine/py/objarray.c
+  - mpy_engine/py/objattrtuple.c
+  - mpy_engine/py/objbool.c
+  - mpy_engine/py/objboundmeth.c
+  - mpy_engine/py/objcell.c
+  - mpy_engine/py/objclosure.c
+  - mpy_engine/py/objcomplex.c
+  - mpy_engine/py/objdeque.c
+  - mpy_engine/py/objdict.c
+  - mpy_engine/py/objenumerate.c
+  - mpy_engine/py/objexcept.c
+  - mpy_engine/py/objfilter.c
+  - mpy_engine/py/objfloat.c
+  - mpy_engine/py/objfun.c
+  - mpy_engine/py/objgenerator.c
+  - mpy_engine/py/objgetitemiter.c
+  - mpy_engine/py/objint.c
+  - mpy_engine/py/objint_longlong.c
+  - mpy_engine/py/objint_mpz.c
+  - mpy_engine/py/objlist.c
+  - mpy_engine/py/objmap.c
+  - mpy_engine/py/objmodule.c
+  - mpy_engine/py/objnamedtuple.c
+  - mpy_engine/py/objnone.c
+  - mpy_engine/py/objobject.c
+  - mpy_engine/py/objpolyiter.c
+  - mpy_engine/py/objproperty.c
+  - mpy_engine/py/objrange.c
+  - mpy_engine/py/objreversed.c
+  - mpy_engine/py/objset.c
+  - mpy_engine/py/objsingleton.c
+  - mpy_engine/py/objslice.c
+  - mpy_engine/py/objstr.c
+  - mpy_engine/py/objstringio.c
+  - mpy_engine/py/objstrunicode.c
+  - mpy_engine/py/objtuple.c
+  - mpy_engine/py/objtype.c
+  - mpy_engine/py/objzip.c
+  - mpy_engine/py/opmethods.c
+  - mpy_engine/py/pairheap.c
+  - mpy_engine/py/parse.c
+  - mpy_engine/py/parsenum.c
+  - mpy_engine/py/parsenumbase.c
+  - mpy_engine/py/persistentcode.c
+  - mpy_engine/py/profile.c
+  - mpy_engine/py/pystack.c
+  - mpy_engine/py/qstr.c
+  - mpy_engine/py/reader.c
+  - mpy_engine/py/repl.c
+  - mpy_engine/py/ringbuf.c
+  - mpy_engine/py/runtime.c
+  - mpy_engine/py/runtime_utils.c
+  - mpy_engine/py/scheduler.c
+  - mpy_engine/py/scope.c
+  - mpy_engine/py/sequence.c
+  - mpy_engine/py/showbc.c
+  - mpy_engine/py/smallint.c
+  - mpy_engine/py/stackctrl.c
+  - mpy_engine/py/stream.c
+  - mpy_engine/py/unicode.c
+  - mpy_engine/py/vm.c
+  - mpy_engine/py/vstr.c
+  - mpy_engine/py/warning.c
+
+  # mpy_adaptor/
+  - mpy_adaptor/mpy_main.c
+  # mpy_adaptor/system/
+  - mpy_adaptor/system/moddriver.c
+  - mpy_adaptor/system/modbattery.c
+  - mpy_adaptor/system/modcharger.c
+  - mpy_adaptor/system/modpm.c
+  - mpy_adaptor/system/modutime.c
+  - mpy_adaptor/system/modsysteminfo.c
+  - mpy_adaptor/system/modsocket.c ? <PY_BUILD_USOCKET>
+  - mpy_adaptor/system/moduos.c ? <PY_BUILD_UOS>
+  - mpy_adaptor/system/_frozen_mpy.c
+  - mpy_adaptor/system/mphalport.c
+  - mpy_adaptor/system/mphalport.c
+  - mpy_adaptor/system/mpthreadport.c
+  - mpy_adaptor/system/utility.c
+  - mpy_adaptor/system/help.c
+  - mpy_adaptor/system/gccollect.c
+  # mpy_adaptor/system/driver
+  - mpy_adaptor/system/driver/board_mgr.c
+  - mpy_adaptor/system/driver/keypad.c
+  - mpy_adaptor/system/driver/location.c
+  - mpy_adaptor/system/driver/und.c
+  - mpy_adaptor/system/driver/crypto.c
+  - mpy_adaptor/system/driver/adc.c
+  - mpy_adaptor/system/driver/can.c
+  - mpy_adaptor/system/driver/gpio.c
+  - mpy_adaptor/system/driver/i2c.c
+  - mpy_adaptor/system/driver/ir.c
+  - mpy_adaptor/system/driver/pwm.c
+  - mpy_adaptor/system/driver/rtc.c
+  - mpy_adaptor/system/driver/spi.c
+  - mpy_adaptor/system/driver/timer.c
+  - mpy_adaptor/system/driver/uart.c
+  - mpy_adaptor/system/driver/wdg.c
+  # mpy_adaptor/system/component
+  - mpy_adaptor/component/minicv/modminicv.c
+  - mpy_adaptor/component/minicv/datainput.c
+  - mpy_adaptor/component/minicv/imagecodec.c
+  - mpy_adaptor/component/minicv/imageproc.c
+  - mpy_adaptor/component/minicv/ml.c ? <PY_BUILD_AI>
+  - mpy_adaptor/component/minicv/ui.c
+  - mpy_adaptor/component/minicv/videocodec.c
+  - mpy_adaptor/component/netmgr/modnetmgr.c ? <PY_BUILD_NETMGR>
+  - mpy_adaptor/component/ble_netconfig/modblenetconfig.c ? <PY_BUILD_BLENETCONFIG>
+  - mpy_adaptor/component/http/modhttp.c ? <PY_BUILD_HTTP>
+  - mpy_adaptor/component/http/httpclient.c ? <PY_BUILD_HTTP>
+  - mpy_adaptor/component/tcp/modtcp.c ? <PY_BUILD_TCP>
+  - mpy_adaptor/component/udp/modudp.c ? <PY_BUILD_UDP>
+  - mpy_adaptor/component/mqtt/modmqtt.c ? <PY_BUILD_MQTT>
+  - mpy_adaptor/component/mqtt/mqttclient.c ? <PY_BUILD_MQTT>
+  - mpy_adaptor/component/linksdk/modlinkkit.c ? <PY_BUILD_LINKSDK>
+  - mpy_adaptor/component/audio/moduvoice.c ? <PY_BUILD_AUDIO>
+  - mpy_adaptor/component/audio/uvoicesnd.c ? <PY_BUILD_AUDIO>
+  - mpy_adaptor/component/audio/uvoiceplayer.c ? <PY_BUILD_AUDIO>
+  - mpy_adaptor/component/audio/uvoicerecorder.c ? <PY_BUILD_AUDIO>
+  - mpy_adaptor/component/audio/uvoicetts.c ? <PY_BUILD_AUDIO>
+  - mpy_adaptor/component/oss/modoss.c ? <PY_BUILD_OSS>
+  - mpy_adaptor/component/sntp/modsntp.c ? <PY_BUILD_SNTP>
+  - mpy_adaptor/component/modbus/modbus.c ? <PY_BUILD_MODBUS>
+  # mpy_adaptor/component/minicv
+  - mpy_adaptor/component/minicv/base/modules/c/src/WrapperIHaasDataInput.cpp
+  - mpy_adaptor/component/minicv/base/modules/c/src/WrapperIHaasImageCodec.cpp
+  - mpy_adaptor/component/minicv/base/modules/c/src/WrapperIHaasImageProc.cpp
+  - mpy_adaptor/component/minicv/base/modules/c/src/WrapperIHaasML.cpp
+  - mpy_adaptor/component/minicv/base/modules/c/src/WrapperIHaasUI.cpp
+  - mpy_adaptor/component/minicv/base/modules/c/src/WrapperIHaasVideoCodec.cpp
+  - mpy_adaptor/component/minicv/base/modules/core/src/HaasImageUtils.cpp
+  - mpy_adaptor/component/minicv/base/modules/ml/src/HaasML.cpp ? <PY_BUILD_AI>
+  - mpy_adaptor/component/minicv/base/modules/ml/src/HaasMLCloud.cpp ? <PY_BUILD_AI>
+  - mpy_adaptor/component/minicv/base/modules/ml/src/HaasMLMnn.cpp ? <PY_BUILD_AI>
+
+## 第五部分：配置信息
+# def_config:                              # 组件的可配置项
+#   CONFIG_DEBUG: y
+#   CONFIG_PARAM_NOT_CHECK: y
+#   CONFIG_CLI: y 
+def_config:                         
+  #以下配置同时仅允许打开其中一项
+  LINKSDK_DEMO_MQTT_BASIC: y       #MQTT连IoT平台基础功能演示
+  LINKSDK_DEMO_MQTT_BCAST: n       #MQTT连IoT平台接收广播推送演示
+  LINKSDK_DEMO_MQTT_RRPC: n        #MQTT连IoT平台RRPC演示
+  CLI_IOBOX_ENABLE: 1              # Enable iobox cmd
+  
+  #以下是Python引擎模块编译选项，1 为打开，0 为关闭
+  PY_BUILD_FATFS: 1                # Py_Engine module build FATFS Flag
+  PY_BUILD_AI: 1                   # Py_Engine module build AI Flag
+  PY_BUILD_HTTP: 1                 # Py_Engine module build http config
+  PY_BUILD_UDP: 1                  # Py_Engine module build udp config
+  PY_BUILD_NETMGR: 1               # Py_Engine module build http config
+  PY_BUILD_MQTT: 1                 # Py_Engine module build mqtt config
+  PY_BUILD_LINKSDK: 1              # Py_Engine module build linksdk config
+  PY_BUILD_USOCKET: 1              # Py_Engine module build usocket config
+  PY_BUILD_AUDIO: 1                # Py_Engine module build uvoice config
+  PY_BUILD_UOS: 1                  # Py_Engine module build uos config
+  PY_BUILD_OSS: 1                  # Py_Engine module build oss config
+  PY_BUILD_BLENETCONFIG: 1         # Py_Engine module build ble net config
+  PY_BUILD_SNTP: 1                 # Py_Engine module build sntptime config
+  PY_BUILD_MODBUS: 1               # Py_Engine module build modbus config
+
+  PY_BUILD_MBEDTLS: 1             # Py_Engine module build mbed TLS
+  MBEDTLS_CTR_DRBG_C: 1
+  MBEDTLS_ENTROPY_C: 1
+  MBEDTLS_NO_PLATFORM_ENTROPY: 1
+
+
+
+
+## 第六部分：安装信息
+# install:
+#   - dest: include/                       # 安装的目的路径 dest是相当路径，通常是相对于YoC SDK 安装目录
+#     source:                              # 安装源列表
+#      - src/*.h                           # 支持通配符，相对路径
+
+
+
+  
+## 第七部分：导出部分
+# export:
+#   - dest: "<SOLUTION_PATH>/generated/data" # 安装的目的路径 dest是相当路径
+#     source:                                # 安装源列表
+#       - "bootimgs/boot"
+#       - "bootimgs/tee"
+#       - "bootimgs/mtb"
+#       - "configs/config.yaml"
